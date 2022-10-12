@@ -38,8 +38,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.Run();
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -51,8 +49,11 @@ using (var scope = app.Services.CreateScope())
         // Calling the static method created by us
         SeedRoles.CreateRoles(serviceProvider, configuration).Wait();
     }
-    catch
+    catch (Exception exception)
     {
-
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(exception, "An error occurred while creating roles");
     }
 }
+
+app.Run();
